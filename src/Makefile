@@ -55,7 +55,7 @@ export PKG_CONFIG_PATH ?= /usr/local/lib/pkgconfig
 
 export WX_CONFIG ?= wx-config
 export WX_CONFIG_ARGS := --unicode
-WX_CONFIGURE_FLAGS :=
+WX_CONFIGURE_FLAGS := --without-libcurl
 export WXCONFIG_CFLAGS :=
 export WXCONFIG_CXXFLAGS :=
 WX_ROOT ?= $(BASE_DIR)/wxWidgets
@@ -295,7 +295,7 @@ ifeq "$(shell uname -s)" "Darwin"
 	PLATFORM := MacOSX
 	APPNAME := VeraCrypt
 
-	export VC_OSX_TARGET ?= 10.7
+	export VC_OSX_TARGET ?= 14.0
 	export VC_OSX_SDK ?= $(VC_OSX_TARGET)
 
 	#check to see if XCode 3 path exists.Otherwise, use XCode 4 path
@@ -351,7 +351,7 @@ ifeq "$(shell uname -s)" "Darwin"
 		C_CXX_FLAGS = $(subst -MMD,,$(S))
 
 		C_CXX_FLAGS += -gfull -arch x86_64
-		LFLAGS += -Wl,-dead_strip -arch x86_64
+		LFLAGS += -Wl,-dead_strip
 		
 		WX_CONFIGURE_FLAGS += --without-libpng --disable-gif --disable-pcx --disable-tga --disable-iff --disable-gif --disable-svg
 
@@ -359,12 +359,12 @@ ifeq "$(shell uname -s)" "Darwin"
 		ifdef VC_LEGACY_BUILD
 			C_CXX_FLAGS += -arch i386
 			LFLAGS += -arch i386
-			WX_CONFIGURE_FLAGS += --enable-universal_binary=i386,x86_64
+			#WX_CONFIGURE_FLAGS += --enable-universal_binary=i386,x86_64
 		else
 			CXXFLAGS += -std=c++11			
 			C_CXX_FLAGS += -arch arm64
 			LFLAGS += -arch arm64
-			WX_CONFIGURE_FLAGS += --enable-universal_binary=arm64,x86_64
+			#WX_CONFIGURE_FLAGS += --enable-universal_binary=arm64,x86_64
 		endif
 
 		WXCONFIG_CFLAGS += -gfull
@@ -490,22 +490,22 @@ LFLAGS := $(LFLAGS) $(TC_EXTRA_LFLAGS)
 WX_CONFIGURE_FLAGS += --enable-unicode -disable-shared --disable-dependency-tracking --enable-exceptions --enable-std_string --enable-dataobj --enable-mimetype
 
 ifdef VC_WX_MINIMAL
-WX_CONFIGURE_FLAGS += --disable-protocol --disable-protocols --disable-url --disable-ipc --disable-sockets --without-libcurl --disable-fs_inet --disable-ole --disable-docview --disable-clipboard \
-	--disable-help --disable-html --disable-mshtmlhelp --disable-htmlhelp --disable-mdi --disable-metafile --disable-addremovectrl --disable-webview \
+WX_CONFIGURE_FLAGS += --disable-protocol --disable-protocols --disable-url --disable-ipc --disable-sockets --disable-fs_inet --disable-ole --disable-docview --disable-clipboard \
+	--disable-help --disable-html --disable-mshtmlhelp --disable-htmlhelp --disable-mdi --disable-metafile --disable-webview \
 	--disable-xrc --disable-aui --disable-postscript --disable-printarch \
 	--disable-arcstream --disable-fs_archive --disable-fs_zip --disable-tarstream --disable-zipstream \
 	--disable-animatectrl --disable-bmpcombobox --disable-calendar --disable-caret --disable-checklst --disable-collpane --disable-colourpicker --disable-comboctrl \
-	--disable-datepick --disable-display --disable-dirpicker --disable-filepicker --disable-fontpicker --disable-grid --disable-dataviewctrl \
+	--disable-display --disable-dirpicker --disable-fontpicker --disable-grid --disable-dataviewctrl \
 	--disable-listbook --disable-odcombobox --disable-sash --disable-searchctrl --disable-slider --disable-splitter --disable-togglebtn \
 	--disable-toolbar --disable-tbarnative --disable-treebook --disable-toolbook --disable-tipwindow --disable-popupwin \
 	--disable-commondlg --disable-aboutdlg --disable-coldlg --disable-finddlg --disable-fontdlg --disable-numberdlg --disable-splash \
 	--disable-tipdlg --disable-progressdlg --disable-wizarddlg --disable-miniframe --disable-splines --disable-palette \
-	--disable-richtext --disable-dialupman --disable-debugreport --disable-filesystem --disable-rearrangectrl --disable-treelist --disable-richmsgdlg \
+	--disable-richtext --disable-dialupman --disable-debugreport --disable-rearrangectrl --disable-treelist --disable-richmsgdlg \
 	--disable-richtooltip --disable-propgrid --disable-stc --without-libnotify \
 	--without-gtkprint --without-gnomevfs --disable-fsvolume --disable-fswatcher \
 	--disable-sound --disable-mediactrl --disable-joystick --disable-apple_ieee \
 	--disable-gif --disable-pcx --disable-tga --disable-iff --disable-gif --disable-pnm --disable-svg \
-	--without-expat --without-libtiff --without-libjpeg --without-libpng -without-regex --without-zlib
+	--without-expat --without-libtiff --without-libjpeg --without-libpng -without-regex --without-zlib --disable-dirdlg --disable-filepicker --disable-dirdlg --disable-filedlg --disable-filectrl --disable-datepick --disable-timepick
 	
 ifneq (,$(filter Linux FreeBSD,$(PLATFORM)))
 WX_CONFIGURE_FLAGS += --disable-tooltips
@@ -557,7 +557,8 @@ endif
 	rm -rf "$(WX_BUILD_DIR)"
 	mkdir -p "$(WX_BUILD_DIR)"
 	@echo Configuring wxWidgets library...
-	cd "$(WX_BUILD_DIR)" && "$(WX_ROOT)/configure" $(WX_CONFIGURE_FLAGS) >/dev/null
+	@echo $(WX_CONFIGURE_FLAGS)
+	cd "$(WX_BUILD_DIR)" && "$(WX_ROOT)/configure" $(WX_CONFIGURE_FLAGS)
 
 	@echo Building wxWidgets library...
 	cd "$(WX_BUILD_DIR)" && $(MAKE) -j 4

@@ -301,13 +301,11 @@ namespace VeraCrypt
 		{
 			if (string (mf.MountPoint).find (GetFuseMountDirPrefix()) == string::npos)
 				continue;
-
 			shared_ptr <VolumeInfo> mountedVol;
 			try
 			{
 				shared_ptr <File> controlFile (new File);
 				controlFile->Open (string (mf.MountPoint) + FuseService::GetControlPath());
-
 				shared_ptr <Stream> controlFileStream (new FileStream (controlFile));
 				mountedVol = Serializable::DeserializeNew <VolumeInfo> (controlFileStream);
 			}
@@ -315,12 +313,10 @@ namespace VeraCrypt
 			{
 				continue;
 			}
-
 			if (!volumePath.IsEmpty() && wstring (mountedVol->Path).compare (volumePath) != 0)
 				continue;
 
 			mountedVol->AuxMountPoint = mf.MountPoint;
-
 			if (!mountedVol->VirtualDevice.IsEmpty())
 			{
 				MountedFilesystemList mpl = GetMountedFilesystems (mountedVol->VirtualDevice);

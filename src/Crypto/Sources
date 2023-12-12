@@ -27,9 +27,6 @@ SOURCES = \
 	Aeskey.c \
 	Aestab.c \
 	blake2s.c \
-	blake2s_SSE2.c \
-	blake2s_SSE41.c \
-	blake2s_SSSE3.c \
 	chacha-xmm.c \
 	chacha256.c \
 	chachaRng.c \

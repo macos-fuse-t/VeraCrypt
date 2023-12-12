@@ -102,7 +102,7 @@ endif
 
 #------ FUSE configuration ------
 
-FUSE_LIBS = $(shell $(PKG_CONFIG) fuse --libs)
+FUSE_LIBS = $(shell pkg-config fuse-t --libs)
 
 #------ Executable ------
 

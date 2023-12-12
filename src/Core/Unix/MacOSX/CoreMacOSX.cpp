@@ -119,40 +119,6 @@ namespace VeraCrypt
 
 	void CoreMacOSX::MountAuxVolumeImage (const DirectoryPath &auxMountPoint, const MountOptions &options) const
 	{
-		// Check FUSE version
-		char fuseVersionString[MAXHOSTNAMELEN + 1] = { 0 };
-		size_t fuseVersionStringLength = MAXHOSTNAMELEN;
-		int status;
-
-		if ((status = sysctlbyname ("osxfuse.version.number", fuseVersionString, &fuseVersionStringLength, NULL, 0)) != 0)
-		{
-			fuseVersionStringLength = MAXHOSTNAMELEN;
-			if ((status = sysctlbyname ("vfs.generic.osxfuse.version.number", fuseVersionString, &fuseVersionStringLength, NULL, 0)) != 0)
-			{
-				fuseVersionStringLength = MAXHOSTNAMELEN;
-				if ((status = sysctlbyname ("vfs.generic.macfuse.version.number", fuseVersionString, &fuseVersionStringLength, NULL, 0)) != 0)
-				{
-					throw HigherFuseVersionRequired (SRC_POS);
-				}
-			}
-		}
-
-		// look for OSXFuse dynamic library
-		struct stat sb;
-		if (0 != stat("/usr/local/lib/libosxfuse_i64.2.dylib", &sb) && 0 != stat("/usr/local/lib/libfuse.dylib", &sb))
-		{
-			throw HigherFuseVersionRequired (SRC_POS);
-		}
-
-		vector <string> fuseVersion = StringConverter::Split (string (fuseVersionString), ".");
-		if (fuseVersion.size() < 2)
-			throw HigherFuseVersionRequired (SRC_POS);
-
-		uint32 fuseVersionMajor = StringConverter::ToUInt32 (fuseVersion[0]);
-		uint32 fuseVersionMinor = StringConverter::ToUInt32 (fuseVersion[1]);
-
-		if (fuseVersionMajor < 2 || (fuseVersionMajor == 2 && fuseVersionMinor < 5))
-			throw HigherFuseVersionRequired (SRC_POS);
 
 		// Mount volume image
 		string volImage = string (auxMountPoint) + FuseService::GetVolumeImagePath();
@@ -214,8 +180,9 @@ namespace VeraCrypt
 		p += 8;
 
 		size_t e = xml.find ("</string>", p);
-		if (e == string::npos)
+		if (e == string::npos) {
 			throw ParameterIncorrect (SRC_POS);
+		}
 
 		DevicePath virtualDev = StringConverter::Trim (xml.substr (p, e - p));
 

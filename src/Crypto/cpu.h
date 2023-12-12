@@ -163,7 +163,7 @@ extern __m128i _mm_alignr_epi8 (__m128i a, __m128i b, int n);
 }
 #endif
 #else
-#include <tmmintrin.h>
+//#include <tmmintrin.h>
 #endif
 #endif
 
